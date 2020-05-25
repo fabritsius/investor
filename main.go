@@ -9,15 +9,23 @@ import (
 	"time"
 
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
+	"github.com/fabritsius/envar"
 )
 
-var token = flag.String("token", "", "your token")
+type config struct {
+	TinkoffToken string `env:"TINKOFF_API_TOKEN"`
+}
 
 func main() {
+	cfg := config{}
+	if err := envar.Fill(&cfg); err != nil {
+		log.Fatalln(err)
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	flag.Parse()
 
-	client := sdk.NewRestClient(*token)
+	client := sdk.NewRestClient(cfg.TinkoffToken)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
