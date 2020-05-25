@@ -1,5 +1,7 @@
 github.com/TinkoffCreditSystems/invest-openapi-go-sdk v0.6.0 h1:7lc00sgeevNRdHt4eFRjUspqsq47RMDyfxkd1n3vs+Y=
 github.com/TinkoffCreditSystems/invest-openapi-go-sdk v0.6.0/go.mod h1:UkDKk4lROIZ7SXs4gcijC7QZW9h2HmNMJ/cEHT8RcBE=
+github.com/fabritsius/envar v1.0.0 h1:mlw5vBQkKnLjSpG15ElI24fYLX2tUneRNDgWoU7Txcg=
+github.com/fabritsius/envar v1.0.0/go.mod h1:5SsfeJk1vNB2O2hbiyGedTZuH1TebvpT8Z9tFMmjI7M=
 github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvKCM=
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
