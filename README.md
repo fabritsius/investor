@@ -10,9 +10,8 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
 2. Go to the project root with `cd investor`
-3. Fill in your API token into `'env.sh'` file
-4. Set environment variables with `. env.sh`
-5. Run the code with `go run main.go`
+3. Fill in your API token into [`.env`](./.env) file (see [`.env.example`](./.env.example))
+4. Run the code with `make dev`
 
 ## TODO
 
