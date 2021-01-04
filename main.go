@@ -69,7 +69,7 @@ converted totals:
 func getTotalPositionsValue(positions []sdk.PositionBalance) TotalAvgValueByCurrency {
 	var positionTotals TotalAvgValueByCurrency
 	for _, pos := range positions {
-		posTotal := pos.Balance * pos.AveragePositionPrice.Value
+		posTotal := (pos.AveragePositionPrice.Value * pos.Balance) + pos.ExpectedYield.Value
 		currency := pos.AveragePositionPrice.Currency
 		switch currency {
 		case sdk.RUB:
