@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -35,73 +36,76 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	var portfolioValue PortfolioValue
+	portfolioStatsByCurrency := getTotalPositionsValue(positions)
 
-	portfolioValue.ByCurr = getTotalPositionsValue(positions)
-	dollarPrice := getDollarPrice(client)
-
-	portfolioValue.CalcTotals(dollarPrice)
-	fmt.Print(portfolioValue)
+	for _, portfolioStats := range portfolioStatsByCurrency {
+		fmt.Println(portfolioStats)
+	}
 }
 
-// PortfolioValue contains potfolio value by currency and converted totals
-type PortfolioValue struct {
-	ByCurr TotalAvgValueByCurrency
-	Totals ConvertedTotalAvgValue
-}
-
-// CalcTotals calculates and fills in the Totals field
-func (v *PortfolioValue) CalcTotals(dollarPrice float64) {
-	v.Totals.USD = v.ByCurr.USD + (v.ByCurr.RUB / dollarPrice)
-	v.Totals.RUB = v.ByCurr.RUB + (v.ByCurr.USD * dollarPrice)
-}
-
-func (v PortfolioValue) String() string {
-	return fmt.Sprintf(`by currency:
-	USD: %10.2f
-	RUB: %10.2f
-converted totals:
-	USD: %10.2f
-	RUB: %10.2f
-`, v.ByCurr.USD, v.ByCurr.RUB, v.Totals.USD, v.Totals.RUB)
-}
-
-func getTotalPositionsValue(positions []sdk.PositionBalance) TotalAvgValueByCurrency {
-	var positionTotals TotalAvgValueByCurrency
+func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*PortfolioStats {
+	portfolioStats := make(map[sdk.Currency]*PortfolioStats)
 	for _, pos := range positions {
-		posTotal := (pos.AveragePositionPrice.Value * pos.Balance) + pos.ExpectedYield.Value
 		currency := pos.AveragePositionPrice.Currency
-		switch currency {
-		case sdk.RUB:
-			positionTotals.RUB += posTotal
-		case sdk.USD:
-			positionTotals.USD += posTotal
+
+		positionStats := &PortfolioStats{
+			Date:     time.Now(),
+			Invested: pos.AveragePositionPrice.Value * pos.Balance,
+			Yield:    pos.ExpectedYield.Value,
+			Stocks:   make(map[string]float64),
+			Currency: currency,
+		}
+		positionStats.Stocks[pos.FIGI] = pos.Balance
+
+		if prevStats, ok := portfolioStats[currency]; ok {
+			if err := (*prevStats).add(positionStats); err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			portfolioStats[currency] = positionStats
 		}
 	}
-	return positionTotals
+	return portfolioStats
 }
 
-func getDollarPrice(client *sdk.RestClient) float64 {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+// PortfolioStats contains main portfolio stats for the moment
+type PortfolioStats struct {
+	Date     time.Time
+	Invested float64
+	Yield    float64
+	Stocks   map[string]float64
+	Currency sdk.Currency
+}
 
-	dollarFIGI := "BBG0013HGFT4"
-	candles, err := client.Candles(ctx, time.Now().AddDate(0, 0, -7), time.Now(), sdk.CandleInterval1Day, dollarFIGI)
-	if err != nil {
-		log.Fatalln(err)
+func (s *PortfolioStats) add(new *PortfolioStats) error {
+	if s.Currency != new.Currency {
+		return errors.New("Can't add. Currencies do no match")
 	}
-	latestCandle := candles[len(candles)-1]
-	dollarPrice := latestCandle.ClosePrice
-	return dollarPrice
+
+	s.Invested += new.Invested
+	s.Yield += new.Yield
+	for bk, bv := range new.Stocks {
+		s.Stocks[bk] = bv
+	}
+
+	return nil
 }
 
-// TotalAvgValueByCurrency contains portfolio value for USD and RUB
-type TotalAvgValueByCurrency usdrubs
-
-// ConvertedTotalAvgValue contains total value converted for USD and RUB
-type ConvertedTotalAvgValue usdrubs
-
-type usdrubs struct {
-	USD float64
-	RUB float64
+// String method prints PortfolioStats in a table-like form
+func (s PortfolioStats) String() string {
+	return fmt.Sprintf("%3s: invested: %10.2f | yield: %10.2f | total: %10.2f", s.Currency, s.Invested, s.Yield, s.Invested+s.Yield)
 }
+
+// func getDollarPrice(client *sdk.RestClient) float64 {
+// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
+
+// 	dollarFIGI := "BBG0013HGFT4"
+// 	candles, err := client.Candles(ctx, time.Now().AddDate(0, 0, -7), time.Now(), sdk.CandleInterval1Day, dollarFIGI)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+// 	latestCandle := candles[len(candles)-1]
+// 	dollarPrice := latestCandle.ClosePrice
+// 	return dollarPrice
+// }
