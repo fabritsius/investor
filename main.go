@@ -37,10 +37,8 @@ func main() {
 	}
 
 	portfolioStatsByCurrency := getTotalPositionsValue(positions)
-
-	for _, portfolioStats := range portfolioStatsByCurrency {
-		fmt.Println(portfolioStats)
-	}
+	portfolioStats := convertPortfolioStatsToDollar(client, portfolioStatsByCurrency)
+	fmt.Println(portfolioStats)
 }
 
 func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*PortfolioStats {
@@ -58,7 +56,7 @@ func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*P
 		positionStats.Stocks[pos.FIGI] = pos.Balance
 
 		if prevStats, ok := portfolioStats[currency]; ok {
-			if err := (*prevStats).add(positionStats); err != nil {
+			if err := (*prevStats).add(positionStats, 1); err != nil {
 				log.Fatalln(err)
 			}
 		} else {
@@ -66,6 +64,20 @@ func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*P
 		}
 	}
 	return portfolioStats
+}
+
+func convertPortfolioStatsToDollar(client *sdk.RestClient, portfolioStatsByCurrency map[sdk.Currency]*PortfolioStats) PortfolioStats {
+	totalPortfolioStats := portfolioStatsByCurrency["USD"]
+	for currency, portfolioStats := range portfolioStatsByCurrency {
+		switch currency {
+		case "RUB":
+			dollarPrice := getDollarPrice(client)
+			if err := totalPortfolioStats.add(portfolioStats, 1/dollarPrice); err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
+	return *totalPortfolioStats
 }
 
 // PortfolioStats contains main portfolio stats for the moment
@@ -77,13 +89,13 @@ type PortfolioStats struct {
 	Currency sdk.Currency
 }
 
-func (s *PortfolioStats) add(new *PortfolioStats) error {
-	if s.Currency != new.Currency {
+func (s *PortfolioStats) add(new *PortfolioStats, multiplier float64) error {
+	if s.Currency != new.Currency && multiplier == 0 {
 		return errors.New("Can't add. Currencies do no match")
 	}
 
-	s.Invested += new.Invested
-	s.Yield += new.Yield
+	s.Invested += new.Invested * multiplier
+	s.Yield += new.Yield * multiplier
 	for bk, bv := range new.Stocks {
 		s.Stocks[bk] = bv
 	}
@@ -96,16 +108,16 @@ func (s PortfolioStats) String() string {
 	return fmt.Sprintf("%3s: invested: %10.2f | yield: %10.2f | total: %10.2f", s.Currency, s.Invested, s.Yield, s.Invested+s.Yield)
 }
 
-// func getDollarPrice(client *sdk.RestClient) float64 {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-// 	defer cancel()
+func getDollarPrice(client *sdk.RestClient) float64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-// 	dollarFIGI := "BBG0013HGFT4"
-// 	candles, err := client.Candles(ctx, time.Now().AddDate(0, 0, -7), time.Now(), sdk.CandleInterval1Day, dollarFIGI)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-// 	latestCandle := candles[len(candles)-1]
-// 	dollarPrice := latestCandle.ClosePrice
-// 	return dollarPrice
-// }
+	dollarFIGI := "BBG0013HGFT4"
+	candles, err := client.Candles(ctx, time.Now().AddDate(0, 0, -7), time.Now(), sdk.CandleInterval1Day, dollarFIGI)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	latestCandle := candles[len(candles)-1]
+	dollarPrice := latestCandle.ClosePrice
+	return dollarPrice
+}
