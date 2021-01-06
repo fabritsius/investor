@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -53,7 +54,7 @@ func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*P
 			Stocks:   make(map[string]float64),
 			Currency: currency,
 		}
-		positionStats.Stocks[pos.FIGI] = pos.Balance
+		positionStats.Stocks[pos.Name] = pos.Balance
 
 		if prevStats, ok := portfolioStats[currency]; ok {
 			if err := (*prevStats).add(positionStats, 1); err != nil {
@@ -105,7 +106,8 @@ func (s *PortfolioStats) add(new *PortfolioStats, multiplier float64) error {
 
 // String method prints PortfolioStats in a table-like form
 func (s PortfolioStats) String() string {
-	return fmt.Sprintf("%3s: invested: %10.2f | yield: %10.2f | total: %10.2f", s.Currency, s.Invested, s.Yield, s.Invested+s.Yield)
+	stocks, _ := json.MarshalIndent(s.Stocks, "", " ")
+	return fmt.Sprintf("%3s: invested: %10.2f | yield: %10.2f | total: %10.2f\n%s", s.Currency, s.Invested, s.Yield, s.Invested+s.Yield, string(stocks))
 }
 
 func getDollarPrice(client *sdk.RestClient) float64 {
