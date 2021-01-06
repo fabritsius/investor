@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -35,50 +37,78 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	var portfolioValue PortfolioValue
-
-	portfolioValue.ByCurr = getTotalPositionsValue(positions)
-	dollarPrice := getDollarPrice(client)
-
-	portfolioValue.CalcTotals(dollarPrice)
-	fmt.Print(portfolioValue)
+	portfolioStatsByCurrency := getTotalPositionsValue(positions)
+	portfolioStats := convertPortfolioStatsToDollar(client, portfolioStatsByCurrency)
+	fmt.Println(portfolioStats)
 }
 
-// PortfolioValue contains potfolio value by currency and converted totals
-type PortfolioValue struct {
-	ByCurr TotalAvgValueByCurrency
-	Totals ConvertedTotalAvgValue
-}
-
-// CalcTotals calculates and fills in the Totals field
-func (v *PortfolioValue) CalcTotals(dollarPrice float64) {
-	v.Totals.USD = v.ByCurr.USD + (v.ByCurr.RUB / dollarPrice)
-	v.Totals.RUB = v.ByCurr.RUB + (v.ByCurr.USD * dollarPrice)
-}
-
-func (v PortfolioValue) String() string {
-	return fmt.Sprintf(`by currency:
-	USD: %10.2f
-	RUB: %10.2f
-converted totals:
-	USD: %10.2f
-	RUB: %10.2f
-`, v.ByCurr.USD, v.ByCurr.RUB, v.Totals.USD, v.Totals.RUB)
-}
-
-func getTotalPositionsValue(positions []sdk.PositionBalance) TotalAvgValueByCurrency {
-	var positionTotals TotalAvgValueByCurrency
+func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*PortfolioStats {
+	portfolioStats := make(map[sdk.Currency]*PortfolioStats)
 	for _, pos := range positions {
-		posTotal := (pos.AveragePositionPrice.Value * pos.Balance) + pos.ExpectedYield.Value
 		currency := pos.AveragePositionPrice.Currency
-		switch currency {
-		case sdk.RUB:
-			positionTotals.RUB += posTotal
-		case sdk.USD:
-			positionTotals.USD += posTotal
+
+		positionStats := &PortfolioStats{
+			Date:     time.Now(),
+			Invested: pos.AveragePositionPrice.Value * pos.Balance,
+			Yield:    pos.ExpectedYield.Value,
+			Stocks:   make(map[string]float64),
+			Currency: currency,
+		}
+		positionStats.Stocks[pos.Name] = pos.Balance
+
+		if prevStats, ok := portfolioStats[currency]; ok {
+			if err := (*prevStats).Add(positionStats, 1); err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			portfolioStats[currency] = positionStats
 		}
 	}
-	return positionTotals
+	return portfolioStats
+}
+
+func convertPortfolioStatsToDollar(client *sdk.RestClient, portfolioStatsByCurrency map[sdk.Currency]*PortfolioStats) PortfolioStats {
+	totalPortfolioStats := portfolioStatsByCurrency["USD"]
+	for currency, portfolioStats := range portfolioStatsByCurrency {
+		switch currency {
+		case "RUB":
+			dollarPrice := getDollarPrice(client)
+			if err := totalPortfolioStats.Add(portfolioStats, 1/dollarPrice); err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
+	return *totalPortfolioStats
+}
+
+// PortfolioStats contains main portfolio stats for the moment
+type PortfolioStats struct {
+	Date     time.Time
+	Invested float64
+	Yield    float64
+	Stocks   map[string]float64
+	Currency sdk.Currency
+}
+
+// Add function adds two PortfolioStats given a multiplier which can be 1
+func (s *PortfolioStats) Add(new *PortfolioStats, multiplier float64) error {
+	if s.Currency != new.Currency && multiplier == 0 {
+		return errors.New("Can't add. Currencies do no match")
+	}
+
+	s.Invested += new.Invested * multiplier
+	s.Yield += new.Yield * multiplier
+	for bk, bv := range new.Stocks {
+		s.Stocks[bk] = bv
+	}
+
+	return nil
+}
+
+// String method prints PortfolioStats in a table-like form
+func (s PortfolioStats) String() string {
+	stocks, _ := json.MarshalIndent(s.Stocks, "", " ")
+	return fmt.Sprintf("%3s: invested: %10.2f | yield: %10.2f | total: %10.2f\n%s", s.Currency, s.Invested, s.Yield, s.Invested+s.Yield, string(stocks))
 }
 
 func getDollarPrice(client *sdk.RestClient) float64 {
@@ -93,15 +123,4 @@ func getDollarPrice(client *sdk.RestClient) float64 {
 	latestCandle := candles[len(candles)-1]
 	dollarPrice := latestCandle.ClosePrice
 	return dollarPrice
-}
-
-// TotalAvgValueByCurrency contains portfolio value for USD and RUB
-type TotalAvgValueByCurrency usdrubs
-
-// ConvertedTotalAvgValue contains total value converted for USD and RUB
-type ConvertedTotalAvgValue usdrubs
-
-type usdrubs struct {
-	USD float64
-	RUB float64
 }
