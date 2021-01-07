@@ -57,7 +57,7 @@ func getTotalPositionsValue(positions []sdk.PositionBalance) map[sdk.Currency]*P
 		positionStats.Stocks[pos.Name] = pos.Balance
 
 		if prevStats, ok := portfolioStats[currency]; ok {
-			if err := (*prevStats).add(positionStats, 1); err != nil {
+			if err := (*prevStats).Add(positionStats, 1); err != nil {
 				log.Fatalln(err)
 			}
 		} else {
@@ -73,7 +73,7 @@ func convertPortfolioStatsToDollar(client *sdk.RestClient, portfolioStatsByCurre
 		switch currency {
 		case "RUB":
 			dollarPrice := getDollarPrice(client)
-			if err := totalPortfolioStats.add(portfolioStats, 1/dollarPrice); err != nil {
+			if err := totalPortfolioStats.Add(portfolioStats, 1/dollarPrice); err != nil {
 				log.Fatalln(err)
 			}
 		}
@@ -90,7 +90,8 @@ type PortfolioStats struct {
 	Currency sdk.Currency
 }
 
-func (s *PortfolioStats) add(new *PortfolioStats, multiplier float64) error {
+// Add function adds two PortfolioStats given a multiplier which can be 1
+func (s *PortfolioStats) Add(new *PortfolioStats, multiplier float64) error {
 	if s.Currency != new.Currency && multiplier == 0 {
 		return errors.New("Can't add. Currencies do no match")
 	}
