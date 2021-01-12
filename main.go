@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"sort"
 	"time"
 
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
@@ -119,13 +120,28 @@ type StockData struct {
 	Yield   float64
 }
 
+// GetTotalValue calculates and return total value of all shares for a stock
+func (s StockData) GetTotalValue() float64 {
+	return s.Balance*s.Price + s.Yield
+}
+
+// ByTotalValue implements sort.Interface for []StockData based on getTotalValue()
+type ByTotalValue []StockData
+
+func (v ByTotalValue) Len() int      { return len(v) }
+func (v ByTotalValue) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
+func (v ByTotalValue) Less(i, j int) bool {
+	return v[i].GetTotalValue() < v[j].GetTotalValue()
+}
+
 // DollarConversionMap has conversion scalars for currencies
 type DollarConversionMap = map[sdk.Currency]float64
 
 // String method prints PortfolioStats in a table-like form
 func (s PortfolioStats) String() string {
-	stocks, _ := json.MarshalIndent(s.Stocks, "", " ")
-	return fmt.Sprintf("%s\n\nTotals in %3s >> invested: %10.2f | yield: %10.2f | grand total: %10.2f", string(stocks), s.Currency, s.Totals.Invested, s.Totals.Yield, s.Totals.Invested+s.Totals.Yield)
+	sort.Sort(ByTotalValue(s.Stocks))
+	stats, _ := json.MarshalIndent(s, "", " ")
+	return fmt.Sprintf(string(stats))
 }
 
 func getDollarPriceInRubles(client *sdk.RestClient) (float64, error) {
