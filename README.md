@@ -9,9 +9,9 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 ## Usage
 
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
-2. Go to the tinkoff plugin directory with `cd investor/plugins/tinkoff`
-3. Fill in your API token into [`.env`](./.env) file (see [`.env.example`](./.env.example))
-4. Run the code with `make dev`
+2. Go to the project root with `cd investor/`
+3. Fill in your API token into [`plugins/tinkoff/.env`](plugins/tinkoff/.env) file (see [`.env.example`](plugins/tinkoff/.env.example))
+4. Run the demo with `make demo`
 
 ## TODO
 
