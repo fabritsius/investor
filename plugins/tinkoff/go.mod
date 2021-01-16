@@ -1,4 +1,4 @@
-module github.com/fabritsius/investor
+module github.com/fabritsius/investor/plugins/tinkoff
 
 go 1.16
 
