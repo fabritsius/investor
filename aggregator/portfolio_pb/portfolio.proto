@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package portfolio;
+
+service Portfolio {
+  rpc GetPortfolio (PortfolioRequest) returns (PortfolioReply) {}
+}
+
+message PortfolioRequest {
+  string user = 1;
+}
+
+message PortfolioReply {
+  string data = 1;
+}

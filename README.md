@@ -11,7 +11,7 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
 2. Go to the project root with `cd investor/`
 3. Fill in your API token into [`plugins/tinkoff/.env`](plugins/tinkoff/.env) file (see [`.env.example`](plugins/tinkoff/.env.example))
-4. Run the demo with `make demo`
+4. Run the demo with `make demo` from the project root directory
 
 ## TODO
 

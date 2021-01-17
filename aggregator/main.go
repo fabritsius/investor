@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello from aggregator")
+	fmt.Println("Hello from the aggregator")
 }
