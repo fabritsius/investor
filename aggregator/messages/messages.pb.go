@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.25.0
 // 	protoc        v3.14.0
-// source: portfolio.proto
+// source: aggregator/messages/messages.proto
 
-package portfolio
+package messages
 
 import (
 	context "context"
@@ -40,7 +40,7 @@ type PortfolioRequest struct {
 func (x *PortfolioRequest) Reset() {
 	*x = PortfolioRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_portfolio_proto_msgTypes[0]
+		mi := &file_aggregator_messages_messages_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -53,7 +53,7 @@ func (x *PortfolioRequest) String() string {
 func (*PortfolioRequest) ProtoMessage() {}
 
 func (x *PortfolioRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_portfolio_proto_msgTypes[0]
+	mi := &file_aggregator_messages_messages_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,7 +66,7 @@ func (x *PortfolioRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortfolioRequest.ProtoReflect.Descriptor instead.
 func (*PortfolioRequest) Descriptor() ([]byte, []int) {
-	return file_portfolio_proto_rawDescGZIP(), []int{0}
+	return file_aggregator_messages_messages_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PortfolioRequest) GetUser() string {
@@ -87,7 +87,7 @@ type PortfolioReply struct {
 func (x *PortfolioReply) Reset() {
 	*x = PortfolioReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_portfolio_proto_msgTypes[1]
+		mi := &file_aggregator_messages_messages_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -100,7 +100,7 @@ func (x *PortfolioReply) String() string {
 func (*PortfolioReply) ProtoMessage() {}
 
 func (x *PortfolioReply) ProtoReflect() protoreflect.Message {
-	mi := &file_portfolio_proto_msgTypes[1]
+	mi := &file_aggregator_messages_messages_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,7 +113,7 @@ func (x *PortfolioReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortfolioReply.ProtoReflect.Descriptor instead.
 func (*PortfolioReply) Descriptor() ([]byte, []int) {
-	return file_portfolio_proto_rawDescGZIP(), []int{1}
+	return file_aggregator_messages_messages_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PortfolioReply) GetData() string {
@@ -123,44 +123,47 @@ func (x *PortfolioReply) GetData() string {
 	return ""
 }
 
-var File_portfolio_proto protoreflect.FileDescriptor
+var File_aggregator_messages_messages_proto protoreflect.FileDescriptor
 
-var file_portfolio_proto_rawDesc = []byte{
-	0x0a, 0x0f, 0x70, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x12, 0x09, 0x70, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x22, 0x26, 0x0a, 0x10,
-	0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x12, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
-	0x75, 0x73, 0x65, 0x72, 0x22, 0x24, 0x0a, 0x0e, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69,
-	0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x32, 0x55, 0x0a, 0x09, 0x50, 0x6f,
-	0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x12, 0x48, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x50, 0x6f,
-	0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x12, 0x1b, 0x2e, 0x70, 0x6f, 0x72, 0x74, 0x66, 0x6f,
-	0x6c, 0x69, 0x6f, 0x2e, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x70, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f,
-	0x2e, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22,
-	0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+var file_aggregator_messages_messages_proto_rawDesc = []byte{
+	0x0a, 0x22, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x2f, 0x6d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x26, 0x0a, 0x10, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69,
+	0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0x24, 0x0a, 0x0e,
+	0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x12,
+	0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x32, 0x41, 0x0a, 0x09, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x12,
+	0x34, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x12,
+	0x11, 0x2e, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x0f, 0x2e, 0x50, 0x6f, 0x72, 0x74, 0x66, 0x6f, 0x6c, 0x69, 0x6f, 0x52, 0x65,
+	0x70, 0x6c, 0x79, 0x22, 0x00, 0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x66, 0x61, 0x62, 0x72, 0x69, 0x74, 0x73, 0x69, 0x75, 0x73, 0x2f, 0x69,
+	0x6e, 0x76, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x2f, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74,
+	0x6f, 0x72, 0x2f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
-	file_portfolio_proto_rawDescOnce sync.Once
-	file_portfolio_proto_rawDescData = file_portfolio_proto_rawDesc
+	file_aggregator_messages_messages_proto_rawDescOnce sync.Once
+	file_aggregator_messages_messages_proto_rawDescData = file_aggregator_messages_messages_proto_rawDesc
 )
 
-func file_portfolio_proto_rawDescGZIP() []byte {
-	file_portfolio_proto_rawDescOnce.Do(func() {
-		file_portfolio_proto_rawDescData = protoimpl.X.CompressGZIP(file_portfolio_proto_rawDescData)
+func file_aggregator_messages_messages_proto_rawDescGZIP() []byte {
+	file_aggregator_messages_messages_proto_rawDescOnce.Do(func() {
+		file_aggregator_messages_messages_proto_rawDescData = protoimpl.X.CompressGZIP(file_aggregator_messages_messages_proto_rawDescData)
 	})
-	return file_portfolio_proto_rawDescData
+	return file_aggregator_messages_messages_proto_rawDescData
 }
 
-var file_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_portfolio_proto_goTypes = []interface{}{
-	(*PortfolioRequest)(nil), // 0: portfolio.PortfolioRequest
-	(*PortfolioReply)(nil),   // 1: portfolio.PortfolioReply
+var file_aggregator_messages_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_aggregator_messages_messages_proto_goTypes = []interface{}{
+	(*PortfolioRequest)(nil), // 0: PortfolioRequest
+	(*PortfolioReply)(nil),   // 1: PortfolioReply
 }
-var file_portfolio_proto_depIdxs = []int32{
-	0, // 0: portfolio.Portfolio.GetPortfolio:input_type -> portfolio.PortfolioRequest
-	1, // 1: portfolio.Portfolio.GetPortfolio:output_type -> portfolio.PortfolioReply
+var file_aggregator_messages_messages_proto_depIdxs = []int32{
+	0, // 0: Portfolio.GetPortfolio:input_type -> PortfolioRequest
+	1, // 1: Portfolio.GetPortfolio:output_type -> PortfolioReply
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -168,13 +171,13 @@ var file_portfolio_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_portfolio_proto_init() }
-func file_portfolio_proto_init() {
-	if File_portfolio_proto != nil {
+func init() { file_aggregator_messages_messages_proto_init() }
+func file_aggregator_messages_messages_proto_init() {
+	if File_aggregator_messages_messages_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_portfolio_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_aggregator_messages_messages_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PortfolioRequest); i {
 			case 0:
 				return &v.state
@@ -186,7 +189,7 @@ func file_portfolio_proto_init() {
 				return nil
 			}
 		}
-		file_portfolio_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_aggregator_messages_messages_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PortfolioReply); i {
 			case 0:
 				return &v.state
@@ -203,20 +206,20 @@ func file_portfolio_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_portfolio_proto_rawDesc,
+			RawDescriptor: file_aggregator_messages_messages_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_portfolio_proto_goTypes,
-		DependencyIndexes: file_portfolio_proto_depIdxs,
-		MessageInfos:      file_portfolio_proto_msgTypes,
+		GoTypes:           file_aggregator_messages_messages_proto_goTypes,
+		DependencyIndexes: file_aggregator_messages_messages_proto_depIdxs,
+		MessageInfos:      file_aggregator_messages_messages_proto_msgTypes,
 	}.Build()
-	File_portfolio_proto = out.File
-	file_portfolio_proto_rawDesc = nil
-	file_portfolio_proto_goTypes = nil
-	file_portfolio_proto_depIdxs = nil
+	File_aggregator_messages_messages_proto = out.File
+	file_aggregator_messages_messages_proto_rawDesc = nil
+	file_aggregator_messages_messages_proto_goTypes = nil
+	file_aggregator_messages_messages_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -244,7 +247,7 @@ func NewPortfolioClient(cc grpc.ClientConnInterface) PortfolioClient {
 
 func (c *portfolioClient) GetPortfolio(ctx context.Context, in *PortfolioRequest, opts ...grpc.CallOption) (*PortfolioReply, error) {
 	out := new(PortfolioReply)
-	err := c.cc.Invoke(ctx, "/portfolio.Portfolio/GetPortfolio", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/Portfolio/GetPortfolio", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +281,7 @@ func _Portfolio_GetPortfolio_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/portfolio.Portfolio/GetPortfolio",
+		FullMethod: "/Portfolio/GetPortfolio",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PortfolioServer).GetPortfolio(ctx, req.(*PortfolioRequest))
@@ -287,7 +290,7 @@ func _Portfolio_GetPortfolio_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 var _Portfolio_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "portfolio.Portfolio",
+	ServiceName: "Portfolio",
 	HandlerType: (*PortfolioServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -296,5 +299,5 @@ var _Portfolio_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "portfolio.proto",
+	Metadata: "aggregator/messages/messages.proto",
 }

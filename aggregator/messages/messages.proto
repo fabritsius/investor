@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package portfolio;
+option go_package = "github.com/fabritsius/investor/aggregator/messages";
 
 service Portfolio {
   rpc GetPortfolio (PortfolioRequest) returns (PortfolioReply) {}
