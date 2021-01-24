@@ -7,15 +7,19 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"sort"
 	"time"
 
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
+
 	"github.com/fabritsius/envar"
+	"github.com/fabritsius/investor/aggregator/messages"
+	"google.golang.org/grpc"
 )
 
 type config struct {
-	TinkoffToken string `env:"TINKOFF_API_TOKEN"`
+	Port string `env:"PORT"`
 }
 
 func main() {
@@ -27,7 +31,33 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	flag.Parse()
 
-	client := sdk.NewRestClient(cfg.TinkoffToken)
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.Port))
+	if err != nil {
+		log.Fatalf("failed to listen on port %s: %v", cfg.Port, err)
+	}
+
+	log.Printf("started tinkoff server on port %s", cfg.Port)
+
+	grpcServer := grpc.NewServer()
+
+	messages.RegisterPortfolioServer(grpcServer, &messageServer{})
+
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("failed to serve grpc: %s", err)
+	}
+}
+
+type messageServer struct{}
+
+func (s *messageServer) GetPortfolio(ctx context.Context, in *messages.PortfolioRequest) (*messages.PortfolioReply, error) {
+	log.Printf("receive message body from client: %s", in.User[2:10])
+	userPortfolio := getPortfolioStats(in.User)
+	totalPortfolioValue := userPortfolio.Totals.Invested + userPortfolio.Totals.Yield
+	return &messages.PortfolioReply{Data: fmt.Sprintf("%.2f", totalPortfolioValue)}, nil
+}
+
+func getPortfolioStats(token string) *PortfolioStats {
+	client := sdk.NewRestClient(token)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -37,11 +67,10 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	portfolioStats := getPortfolioStats(client, positions)
-	fmt.Println(*portfolioStats)
+	return getStatsFromPositions(client, positions)
 }
 
-func getPortfolioStats(client *sdk.RestClient, positions []sdk.PositionBalance) *PortfolioStats {
+func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalance) *PortfolioStats {
 	portfolioStats := &PortfolioStats{
 		Currency: "USD",
 		Date:     time.Now(),

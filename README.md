@@ -10,12 +10,14 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
 2. Go to the project root with `cd investor/`
-3. Fill in your API token into [`plugins/tinkoff/.env`](plugins/tinkoff/.env) file (see [`.env.example`](plugins/tinkoff/.env.example))
-4. Run the demo with `make demo` from the project root directory
+3. Fill in your API token into [`aggregator/.env`](aggregator/.env) file (see [`.env.example`](aggregator/.env.example))
+4. Run `make start_server` to start tinkoff plugin as a server
+5. Run `make run_client` from a separate console to test the server
 
 ## TODO
 
 - [x] Get basic data about stock portfolio from Tinkoff
+- [x] Use gRPC to connect plugins to the aggregator
 - [ ] Store portfolio history in a database
 - [ ] Use a [Telegram Bot](https://core.telegram.org/bots) as a user interface
 - [ ] Create a webpage with the project description

@@ -1,4 +1,5 @@
-demo:
+start_server:
 	cd plugins/tinkoff && make dev
-	sleep 1
+
+run_client:
 	cd aggregator && make dev
