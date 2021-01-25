@@ -31,7 +31,9 @@ func main() {
 
 	client := messages.NewPortfolioClient(conn)
 
-	response, err := client.GetPortfolio(context.Background(), &messages.PortfolioRequest{User: cfg.TinkoffToken})
+	response, err := client.GetPortfolio(context.Background(), &messages.PortfolioRequest{
+		Options: map[string]string{"token": cfg.TinkoffToken},
+	})
 	if err != nil {
 		log.Fatalf("error when calling GetPortfolio: %s", err)
 	}

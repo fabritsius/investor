@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -50,8 +51,12 @@ func main() {
 type messageServer struct{}
 
 func (s *messageServer) GetPortfolio(ctx context.Context, in *messages.PortfolioRequest) (*messages.PortfolioReply, error) {
-	log.Printf("receive message body from client: %s", in.User[2:10])
-	userPortfolio := getPortfolioStats(in.User)
+	userToken, ok := in.Options["token"]
+	if !ok {
+		return nil, errors.New("\"token\" is missing")
+	}
+	log.Printf("receive message body from client: %s", userToken[2:10])
+	userPortfolio := getPortfolioStats(userToken)
 	totalPortfolioValue := userPortfolio.Totals.Invested + userPortfolio.Totals.Yield
 	return &messages.PortfolioReply{Data: fmt.Sprintf("%.2f", totalPortfolioValue)}, nil
 }

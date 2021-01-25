@@ -7,7 +7,7 @@ service Portfolio {
 }
 
 message PortfolioRequest {
-  string user = 1;
+  map<string, string> Options = 1;
 }
 
 message PortfolioReply {
