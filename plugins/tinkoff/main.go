@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -57,11 +56,10 @@ func (s *messageServer) GetPortfolio(ctx context.Context, in *messages.Portfolio
 	}
 	log.Printf("receive message body from client: %s", userToken[2:10])
 	userPortfolio := getPortfolioStats(userToken)
-	totalPortfolioValue := userPortfolio.Totals.Invested + userPortfolio.Totals.Yield
-	return &messages.PortfolioReply{Data: fmt.Sprintf("%.2f", totalPortfolioValue)}, nil
+	return &messages.PortfolioReply{Data: userPortfolio}, nil
 }
 
-func getPortfolioStats(token string) *PortfolioStats {
+func getPortfolioStats(token string) *messages.PortfolioStats {
 	client := sdk.NewRestClient(token)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -75,12 +73,12 @@ func getPortfolioStats(token string) *PortfolioStats {
 	return getStatsFromPositions(client, positions)
 }
 
-func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalance) *PortfolioStats {
-	portfolioStats := &PortfolioStats{
-		Currency: "USD",
-		Date:     time.Now(),
-		Stocks:   []StockData{},
-		Totals:   PortfolioTotals{},
+func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalance) *messages.PortfolioStats {
+	portfolioStats := &messages.PortfolioStats{
+		Currency: messages.Currency_USD,
+		Date:     time.Now().Unix(),
+		Stocks:   []*messages.StockData{},
+		Totals:   &messages.PortfolioTotals{},
 	}
 	dollarConversionMap := make(DollarConversionMap)
 	dollarRubPrice, err := getDollarPriceInRubles(client)
@@ -104,8 +102,8 @@ func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalan
 			"FIGI": pos.FIGI,
 			"ISIN": pos.ISIN,
 		}
-		stockData := StockData{
-			IDs:     stockIDs,
+		stockData := &messages.StockData{
+			Ids:     stockIDs,
 			Name:    pos.Name,
 			Balance: pos.Balance,
 			Price:   price,
@@ -114,8 +112,11 @@ func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalan
 
 		portfolioStats.Totals.Invested += stockData.Balance * stockData.Price
 		portfolioStats.Totals.Yield += stockData.Yield
+
 		portfolioStats.Stocks = append(portfolioStats.Stocks, stockData)
 	}
+
+	sort.Sort(sort.Reverse(ByTotalValue(portfolioStats.Stocks)))
 	return portfolioStats
 }
 
@@ -131,52 +132,22 @@ func convertToDollar(currency sdk.Currency, value float64, dollarConversionMap D
 	}
 }
 
-// PortfolioStats contains main portfolio stats for the moment
-type PortfolioStats struct {
-	Currency sdk.Currency
-	Date     time.Time
-	Stocks   []StockData
-	Totals   PortfolioTotals
-}
-
-// PortfolioTotals contains calculated totals for portfolio
-type PortfolioTotals struct {
-	Invested float64
-	Yield    float64
-}
-
-// StockData contains main data about the stock
-type StockData struct {
-	IDs     map[string]string
-	Name    string
-	Balance float64
-	Price   float64
-	Yield   float64
-}
-
-// GetTotalValue calculates and return total value of all shares for a stock
-func (s StockData) GetTotalValue() float64 {
+// getStockTotalValue calculates and return total value of all shares for a stock
+func getStockTotalValue(s *messages.StockData) float64 {
 	return s.Balance*s.Price + s.Yield
 }
 
-// ByTotalValue implements sort.Interface for []StockData based on getTotalValue()
-type ByTotalValue []StockData
+// ByTotalValue implements sort.Interface for []StockData based on getStockTotalValue function
+type ByTotalValue []*messages.StockData
 
 func (v ByTotalValue) Len() int      { return len(v) }
 func (v ByTotalValue) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 func (v ByTotalValue) Less(i, j int) bool {
-	return v[i].GetTotalValue() < v[j].GetTotalValue()
+	return getStockTotalValue(v[i]) < getStockTotalValue(v[j])
 }
 
 // DollarConversionMap has conversion scalars for currencies
 type DollarConversionMap = map[sdk.Currency]float64
-
-// String method prints PortfolioStats in a table-like form
-func (s PortfolioStats) String() string {
-	sort.Sort(ByTotalValue(s.Stocks))
-	stats, _ := json.MarshalIndent(s, "", " ")
-	return fmt.Sprintf(string(stats))
-}
 
 func getDollarPriceInRubles(client *sdk.RestClient) (float64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

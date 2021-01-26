@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -37,6 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error when calling GetPortfolio: %s", err)
 	}
-	log.Printf("Total Portfolio Value: $%s", response.Data)
 
+	stats, _ := json.MarshalIndent(response, "", " ")
+	log.Printf("Portfolio: %s", string(stats))
 }
