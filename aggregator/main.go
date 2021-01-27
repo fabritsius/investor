@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/fabritsius/envar"
-	"github.com/fabritsius/investor/aggregator/messages"
+	"github.com/fabritsius/investor/messages"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

@@ -14,7 +14,7 @@ import (
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
 
 	"github.com/fabritsius/envar"
-	"github.com/fabritsius/investor/aggregator/messages"
+	"github.com/fabritsius/investor/messages"
 	"google.golang.org/grpc"
 )
 
