@@ -8,3 +8,5 @@ require (
 	github.com/fabritsius/investor/messages v0.0.0-20210128174819-fd4734fa4c44
 	google.golang.org/grpc v1.35.0
 )
+
+replace github.com/fabritsius/investor/messages => ../../messages/

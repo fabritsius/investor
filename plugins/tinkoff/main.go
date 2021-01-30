@@ -98,16 +98,17 @@ func getStatsFromPositions(client *sdk.RestClient, positions []sdk.PositionBalan
 			log.Fatalln(err)
 		}
 
-		stockIDs := map[string]string{
+		otherFields := map[string]string{
 			"FIGI": pos.FIGI,
 			"ISIN": pos.ISIN,
+			"type": string(pos.InstrumentType),
 		}
 		stockData := &messages.StockData{
-			Ids:     stockIDs,
 			Name:    pos.Name,
 			Balance: pos.Balance,
 			Price:   price,
 			Yield:   yield,
+			Other:   otherFields,
 		}
 
 		portfolioStats.Totals.Invested += stockData.Balance * stockData.Price

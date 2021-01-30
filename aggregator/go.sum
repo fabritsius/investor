@@ -10,8 +10,6 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fabritsius/envar v1.0.1 h1:1E4EJTXdXPuyiNVTwz697AG3AyZoA2/xXFoqWBQLFn8=
 github.com/fabritsius/envar v1.0.1/go.mod h1:5SsfeJk1vNB2O2hbiyGedTZuH1TebvpT8Z9tFMmjI7M=
-github.com/fabritsius/investor/messages v0.0.0-20210128174819-fd4734fa4c44 h1:Z/Ltzzq0mhCfAGNZtvsxomRbCjoyk8aqBNi8jrDPZjw=
-github.com/fabritsius/investor/messages v0.0.0-20210128174819-fd4734fa4c44/go.mod h1:+mFfP0Vd0ba6LKCggacjPDpgBhRxOG8aMO43ep3lHPY=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/mock v1.1.1/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfbm0A=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

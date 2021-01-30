@@ -22,11 +22,11 @@ message PortfolioStats {
 }
 
 message StockData {
-  map<string, string> ids = 1;
-  string name = 2;
-  double balance = 3;
-  double price = 4;
-  double yield = 5;
+  string name = 1;
+  double balance = 2;
+  double price = 3;
+  double yield = 4;
+  map<string, string> other = 5;
 }
 
 message PortfolioTotals {
