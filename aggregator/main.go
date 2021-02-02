@@ -15,8 +15,7 @@ import (
 )
 
 type config struct {
-	Port         string `env:"TINKOFF_PORT"`
-	TinkoffToken string `env:"TINKOFF_API_TOKEN"`
+	Port string `env:"TINKOFF_PORT"`
 }
 
 func main() {

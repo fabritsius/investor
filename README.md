@@ -10,9 +10,11 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
 2. Go to the project root with `cd investor/`
-3. Fill in your API token into [`aggregator/.env`](aggregator/.env) file (see [`.env.example`](aggregator/.env.example))
-4. Run `make start_server` to start tinkoff plugin as a server
-5. Run `make run_client` from a separate console to test the server
+3. Ensure you have [Cassandra](https://cassandra.apache.org/) running on standard local ports (or run `make db`)
+3. Init the DB with `investor.accounts_by_user` table (see the code, better docs will come later)
+4. insert a user where `account` is `tinkoff` and `key` is `YOUR_TINKOFF_TOKEN`
+5. Run `make plugins` to start tinkoff plugin
+6. Run `make aggregator` from a separate console to test the plugin
 
 ## TODO
 

@@ -1,5 +1,3 @@
-include .env
-export $(shell sed 's/=.*//' .env)
 export TINKOFF_PORT=3000
 
 build:
