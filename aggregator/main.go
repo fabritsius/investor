@@ -43,12 +43,15 @@ func main() {
 	for account := range getUserAccounts(ctx, dbSession) {
 		log.Println("Account:", account.userID, account.accountType, account.token)
 
-		if account.accountType == "tinkoff" {
-			portfolio, err := GetTinkoffPortfolio(conn, account.token)
-			if err != nil {
-				log.Fatalf("error when calling getTinkoffPortfolio: %s", err)
+		var portfolio *messages.PortfolioReply
+		switch account.accountType {
+		case "tinkoff":
+			if portfolio, err = GetTinkoffPortfolio(conn, account.token); err != nil {
+				log.Printf("error when calling getTinkoffPortfolio: %s", err)
 			}
+		}
 
+		if portfolio != nil {
 			stats, _ := json.MarshalIndent(portfolio, "", " ")
 			log.Printf("Portfolio: %s", string(stats))
 		}
