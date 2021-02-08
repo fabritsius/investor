@@ -13,8 +13,8 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 3. Ensure you have [Cassandra](https://cassandra.apache.org/) running on standard local ports (or run `make db`)
 3. Init the DB with `investor.accounts_by_user` table (see the code, better docs will come later)
 4. insert a user where `account` is `tinkoff` and `key` is `YOUR_TINKOFF_TOKEN`
-5. Run `make plugins` to start tinkoff plugin
-6. Run `make aggregator` from a separate console to test the plugin
+5. Run `make tinkoff` to start tinkoff plugin
+6. Run `make aggregate` from a separate console to test the plugin
 
 ## TODO
 

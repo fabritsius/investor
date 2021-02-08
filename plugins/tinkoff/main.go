@@ -19,7 +19,7 @@ import (
 )
 
 type config struct {
-	Port string `env:"PORT"`
+	Port string `env:"TINKOFF_PORT"`
 }
 
 func main() {

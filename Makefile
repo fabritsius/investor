@@ -1,9 +1,10 @@
-# only one plugin for now
-plugins:
-	cd plugins/tinkoff && make dev
+export TINKOFF_PORT=3000
 
-aggregator:
-	cd aggregator && make dev
+tinkoff:
+	cd plugins/tinkoff && go run main.go
+
+aggregate:
+	cd aggregator && go run main.go
 
 # use 4.0-beta3 cause :latest doesn't support platform (linux/arm64/v8)
 # version 4.0-beta4 doesn't work because of this: https://issues.apache.org/jira/browse/CASSANDRA-16424
