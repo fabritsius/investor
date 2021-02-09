@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/fabritsius/envar"
+	"github.com/fabritsius/investor/aggregator/models"
 	"github.com/fabritsius/investor/messages"
-	"github.com/gocql/gocql"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -31,22 +31,28 @@ func main() {
 	}
 	defer conn.Close()
 
-	dbSession, err := getDbSession()
+	db, err := models.Connect("127.0.0.1")
 	if err != nil {
 		log.Fatalf("did not connect to the database: %s", err)
 	}
-	defer dbSession.Close()
+	defer db.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	for account := range getUserAccounts(ctx, dbSession) {
-		log.Println("Account:", account.userID, account.accountType, account.token)
+	for item := range db.GetAllUserAccounts(ctx) {
+		if item.Error != nil {
+			log.Printf("account error: %s", err)
+			continue
+		}
+
+		account := item.Account
+		log.Println("Account:", account.UserID, account.AccountType, account.Token)
 
 		var portfolio *messages.PortfolioReply
-		switch account.accountType {
+		switch account.AccountType {
 		case "tinkoff":
-			if portfolio, err = GetTinkoffPortfolio(conn, account.token); err != nil {
+			if portfolio, err = GetTinkoffPortfolio(conn, account.Token); err != nil {
 				log.Printf("error when calling getTinkoffPortfolio: %s", err)
 			}
 		}
@@ -72,35 +78,4 @@ func GetTinkoffPortfolio(conn *grpc.ClientConn, tinkoffToken string) (*messages.
 	}
 
 	return response, nil
-}
-
-func getDbSession() (*gocql.Session, error) {
-	cluster := gocql.NewCluster("127.0.0.1")
-	cluster.Keyspace = "investor"
-	return cluster.CreateSession()
-}
-
-func getUserAccounts(ctx context.Context, dbSession *gocql.Session) <-chan *UserAccount {
-	query := "SELECT * FROM accounts_by_user"
-	scanner := dbSession.Query(query).WithContext(ctx).Iter().Scanner()
-	result := make(chan *UserAccount)
-	go func() {
-		defer close(result)
-		for scanner.Next() {
-			account := &UserAccount{}
-			if err := scanner.Scan(&account.userID, &account.accountType, &account.token); err != nil {
-				log.Fatalf("gocql scanner error: %s", err)
-				continue
-			}
-			result <- account
-		}
-	}()
-	return result
-}
-
-// UserAccount represents one of user's stocks account
-type UserAccount struct {
-	userID      gocql.UUID
-	accountType string
-	token       string
 }
