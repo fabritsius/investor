@@ -37,3 +37,13 @@ func (db *DB) GetAllUserAccounts(ctx context.Context) <-chan *UserAccountWithErr
 	}()
 	return result
 }
+
+// EnsureUsers creates all user related tables if they are missing
+func (db *DB) EnsureUsers(ctx context.Context) error {
+	query := `CREATE TABLE IF NOT EXISTS accounts_by_user (
+		user_id UUID,
+		account text,
+		key text,
+		PRIMARY KEY (user_id, account));`
+	return db.session.Query(query).WithContext(ctx).Exec()
+}

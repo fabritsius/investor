@@ -31,9 +31,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	db, err := models.Connect("127.0.0.1")
-	if err != nil {
+	var db *models.DB
+	if db, err = models.Connect("127.0.0.1"); err != nil {
 		log.Fatalf("did not connect to the database: %s", err)
+	}
+	if err = db.Init(); err != nil {
+		log.Fatalf("database init error: %s", err)
 	}
 	defer db.Close()
 
