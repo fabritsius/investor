@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"log"
+	"os"
 
 	"github.com/gocql/gocql"
 )
@@ -45,5 +47,21 @@ func (db *DB) EnsureUsers(ctx context.Context) error {
 		account text,
 		key text,
 		PRIMARY KEY (user_id, account));`
-	return db.session.Query(query).WithContext(ctx).Exec()
+	if err := db.session.Query(query).WithContext(ctx).Exec(); err != nil {
+		return err
+	}
+
+	if defaultTinkoffToken, ok := os.LookupEnv("DEFAULT_TINKOFF_TOKEN"); ok {
+		defaultID, err := gocql.UUIDFromBytes([]byte("default-tinkoff-token")[:16])
+		if err != nil {
+			log.Printf("failed to generate UUID so zero-ID is used: %s", err)
+		}
+		query = `UPDATE accounts_by_user SET key = ? WHERE user_id = ? AND account = ?;`
+		err = db.session.Query(query, defaultTinkoffToken, defaultID, "tinkoff").WithContext(ctx).Exec()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

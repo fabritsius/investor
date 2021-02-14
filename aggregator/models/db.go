@@ -29,7 +29,7 @@ func Connect(hosts ...string) (*DB, error) {
 	}, nil
 }
 
-// Init creates missing tables
+// Init creates missing tables and fills in default values
 func (db *DB) Init() error {
 	if err := db.EnsureUsers(context.Background()); err != nil {
 		return fmt.Errorf("failed to unsure users tables: %s", err)

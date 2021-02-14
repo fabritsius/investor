@@ -1,5 +1,8 @@
 export TINKOFF_PORT=3000
 
+include .env
+export $(shell sed 's/=.*//' .env)
+
 tinkoff:
 	cd plugins/tinkoff && go run main.go
 
