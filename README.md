@@ -10,11 +10,11 @@ I wanted to track more data about my portfolio than there is in the app so I dec
 
 1. Clone the repo with `git clone https://github.com/fabritsius/investor`
 2. Go to the project root with `cd investor/`
-3. Ensure you have [Cassandra](https://cassandra.apache.org/) running on standard local ports (or run `make db`)
-3. Init the DB with `investor.accounts_by_user` table (see the code, better docs will come later)
-4. insert a user where `account` is `tinkoff` and `key` is `YOUR_TINKOFF_TOKEN`
-5. Run `make tinkoff` to start tinkoff plugin
-6. Run `make aggregate` from a separate console to test the plugin
+3. Run `make db` if you have [docker](https://www.docker.com/) or make sure you have [cassandra](https://cassandra.apache.org/) running locally
+4. Run `make keyspace` to create project keyspace (requires [cassandra](https://cassandra.apache.org/) running in [docker](https://www.docker.com/))
+5. Create a new [.env](.env) file using [.env.example](.env.example) as an example
+6. Run `make tinkoff` to start tinkoff plugin
+7. Run `make aggregate` from a separate console to test the plugin
 
 ## TODO
 
