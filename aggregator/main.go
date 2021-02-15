@@ -61,6 +61,19 @@ func main() {
 		}
 
 		if portfolio != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+
+			if err := db.UpdateDailyRecord(ctx, &models.PortfolioValue{
+				UserID:      account.UserID,
+				AccountType: account.AccountType,
+				Date:        time.Now().Format("2006-01-02"),
+				Invested:    portfolio.Data.Totals.Invested,
+				Yield:       portfolio.Data.Totals.Yield,
+			}); err != nil {
+				log.Printf("failed to update portfolio stats: %s", err)
+			}
+
 			stats, _ := json.MarshalIndent(portfolio, "", " ")
 			log.Printf("Portfolio: %s", string(stats))
 		}

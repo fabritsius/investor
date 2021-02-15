@@ -35,6 +35,10 @@ func (db *DB) Init() error {
 		return fmt.Errorf("failed to unsure users tables: %s", err)
 	}
 
+	if err := db.EnsureStats(context.Background()); err != nil {
+		return fmt.Errorf("failed to unsure stats tables: %s", err)
+	}
+
 	return nil
 }
 
