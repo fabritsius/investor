@@ -14,6 +14,8 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fabritsius/envar v1.0.1 h1:1E4EJTXdXPuyiNVTwz697AG3AyZoA2/xXFoqWBQLFn8=
 github.com/fabritsius/envar v1.0.1/go.mod h1:5SsfeJk1vNB2O2hbiyGedTZuH1TebvpT8Z9tFMmjI7M=
+github.com/fabritsius/envar v1.1.0 h1:YXgY77Mpr+Qbult8E0srUj+FW71ucPNfvKQGZFTU8dM=
+github.com/fabritsius/envar v1.1.0/go.mod h1:5SsfeJk1vNB2O2hbiyGedTZuH1TebvpT8Z9tFMmjI7M=
 github.com/gocql/gocql v0.0.0-20210129204804-4364a4b9cfdd h1:j0VZcDIpU6sLBMNFUEvuwP4FdmEXbmaEq6qufApwbbo=
 github.com/gocql/gocql v0.0.0-20210129204804-4364a4b9cfdd/go.mod h1:DL0ekTmBSTdlNF25Orwt/JMzqIq3EJ4MVa/J/uK64OY=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
