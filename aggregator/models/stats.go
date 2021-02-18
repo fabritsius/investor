@@ -13,6 +13,7 @@ type DailyPortfolioStats struct {
 	AccountType string
 	Date        string
 	Avg         float64
+	Last        float64
 	Max         float64
 	Min         float64
 	N           int
@@ -30,26 +31,30 @@ type PortfolioValue struct {
 
 // UpdateDailyRecord updates daily AVG, MAX, MIN records for portfolios
 func (db *DB) UpdateDailyRecord(ctx context.Context, portfolio *PortfolioValue) error {
-	var avg, max, min float64
+	var avg, last, max, min float64
 	var n int
 	min = math.MaxFloat64
 
-	getQuery := `SELECT (avg, max, min, n)
+	getQuery := `SELECT (avg, last, max, min, n)
 		FROM daily_portfolio_stats_by_user
 		WHERE user_id = ? AND account = ? AND date = ?;`
 	q := db.session.Query(getQuery, portfolio.UserID, portfolio.AccountType, portfolio.Date)
-	q.WithContext(ctx).Scan(&avg, &max, &min, &n)
+	q.WithContext(ctx).Scan(&avg, &last, &max, &min, &n)
 
-	totalValue := portfolio.Invested + portfolio.Yield
-	avg = recalcAverage(avg, totalValue, n)
-	max = math.Max(max, totalValue)
-	min = math.Min(min, totalValue)
+	current := portfolio.Invested + portfolio.Yield
+	if current == last {
+		return nil
+	}
+
+	avg = recalcAverage(avg, current, n)
+	max = math.Max(max, current)
+	min = math.Min(min, current)
 	n++
 
 	updateQuery := `UPDATE daily_portfolio_stats_by_user
-		SET avg = ?, max = ?, min = ?, n = ?
+		SET avg = ?, last = ?, max = ?, min = ?, n = ?
 		WHERE user_id = ? AND account = ? AND date = ?;`
-	q = db.session.Query(updateQuery, avg, max, min, n, portfolio.UserID, portfolio.AccountType, portfolio.Date)
+	q = db.session.Query(updateQuery, avg, current, max, min, n, portfolio.UserID, portfolio.AccountType, portfolio.Date)
 	if err := q.WithContext(ctx).Exec(); err != nil {
 		return err
 	}
@@ -64,6 +69,7 @@ func (db *DB) EnsureStats(ctx context.Context) error {
 		account text,
 		date date,
 		avg double,
+		last double,
 		max double,
 		min double,
 		n int,
