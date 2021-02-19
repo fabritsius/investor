@@ -6,12 +6,15 @@ export $(shell sed 's/=.*//' .env)
 
 build:
 	docker build -t tinkoff-plugin ./plugins/tinkoff
+	docker build -t aggregator ./aggregator
 
 start:
 	docker start main-tinkoff-plugin || docker run -d -p 7702:7702 --name main-tinkoff-plugin tinkoff-plugin
+	docker start main-aggregator || docker run -d --network="host" --name main-aggregator aggregator
 
 stop:
 	docker stop main-tinkoff-plugin
+	docker stop main-aggregator
 
 tinkoff:
 	cd plugins/tinkoff && go run main.go
