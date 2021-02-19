@@ -1,7 +1,17 @@
-export TINKOFF_PORT=3000
+export TINKOFF_PORT=7702
 
 include .env
 export $(shell sed 's/=.*//' .env)
+
+
+build:
+	docker build -t tinkoff-plugin ./plugins/tinkoff
+
+start:
+	docker start main-tinkoff-plugin || docker run -d -p 7702:7702 --name main-tinkoff-plugin tinkoff-plugin
+
+stop:
+	docker stop main-tinkoff-plugin
 
 tinkoff:
 	cd plugins/tinkoff && go run main.go
