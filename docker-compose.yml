@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  aggregator:
+    build: ./aggregator
+    network_mode: host
+    depends_on:
+      - db_setup
+    env_file:
+      .env
+  tinkoff:
+    build: ./plugins/tinkoff
+    network_mode: host
+  db:
+    image: cassandra:4.0-beta3
+    network_mode: host
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  db_setup:
+    image: cassandra:4.0-beta3
+    network_mode: host
+    command: >
+      cqlsh --execute="CREATE KEYSPACE IF NOT EXISTS investor WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 1 };"
+    depends_on:
+      db:
+        condition: service_healthy
