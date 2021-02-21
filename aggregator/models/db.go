@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/gocql/gocql"
 )
@@ -13,36 +12,41 @@ type DB struct {
 	session *gocql.Session
 }
 
-// Connect creates a new session and returns a DB object
+// Connect opens a new DB session
 func Connect(hosts ...string) (*DB, error) {
-	cluster := gocql.NewCluster(hosts...)
-	cluster.Keyspace = "investor"
-	cluster.Timeout = 5 * time.Second
-
-	session, err := cluster.CreateSession()
-	if err != nil {
+	db := &DB{}
+	if err := OpenSession(db, hosts); err != nil {
 		return nil, err
 	}
 
-	return &DB{
-		session: session,
-	}, nil
+	return db, nil
+}
+
+// Disconnect closes the db session
+func (db *DB) Disconnect() {
+	CloseSession(db)
 }
 
 // Init creates missing tables and fills in default values
 func (db *DB) Init() error {
-	if err := db.EnsureUsers(context.Background()); err != nil {
+	if err := EnsureUsers(context.Background(), db); err != nil {
 		return fmt.Errorf("failed to unsure users tables: %s", err)
 	}
 
-	if err := db.EnsureStats(context.Background()); err != nil {
+	if err := EnsureStats(context.Background(), db); err != nil {
 		return fmt.Errorf("failed to unsure stats tables: %s", err)
 	}
 
 	return nil
 }
 
-// Close end the DB session
-func (db *DB) Close() {
-	db.session.Close()
+// GetSession return session to satisfy HasSession interface
+func (db *DB) GetSession() *gocql.Session {
+	return db.session
+}
+
+// SetSession sets the session to satisfy HasSession interface
+func (db *DB) SetSession(session *gocql.Session) error {
+	db.session = session
+	return nil
 }

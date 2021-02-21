@@ -63,7 +63,7 @@ func (db *DB) UpdateDailyRecord(ctx context.Context, portfolio *PortfolioValue) 
 }
 
 // EnsureStats creates all stats related tables if they are missing
-func (db *DB) EnsureStats(ctx context.Context) error {
+func EnsureStats(ctx context.Context, db HasSession) error {
 	query := `CREATE TABLE IF NOT EXISTS daily_portfolio_stats_by_user (
 		user_id uuid,
 		account text,
@@ -75,7 +75,7 @@ func (db *DB) EnsureStats(ctx context.Context) error {
 		n int,
 		PRIMARY KEY (user_id, account, date))
 		WITH CLUSTERING ORDER BY (account ASC, date ASC);`
-	if err := db.session.Query(query).WithContext(ctx).Exec(); err != nil {
+	if err := db.GetSession().Query(query).WithContext(ctx).Exec(); err != nil {
 		return err
 	}
 

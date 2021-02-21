@@ -41,13 +41,13 @@ func (db *DB) GetAllUserAccounts(ctx context.Context) <-chan *UserAccountWithErr
 }
 
 // EnsureUsers creates all user related tables if they are missing
-func (db *DB) EnsureUsers(ctx context.Context) error {
+func EnsureUsers(ctx context.Context, db HasSession) error {
 	query := `CREATE TABLE IF NOT EXISTS accounts_by_user (
 		user_id UUID,
 		account text,
 		key text,
 		PRIMARY KEY (user_id, account));`
-	if err := db.session.Query(query).WithContext(ctx).Exec(); err != nil {
+	if err := db.GetSession().Query(query).WithContext(ctx).Exec(); err != nil {
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (db *DB) EnsureUsers(ctx context.Context) error {
 			log.Printf("failed to generate UUID so zero-ID is used: %s", err)
 		}
 		query = `UPDATE accounts_by_user SET key = ? WHERE user_id = ? AND account = ?;`
-		err = db.session.Query(query, defaultTinkoffToken, defaultID, "tinkoff").WithContext(ctx).Exec()
+		err = db.GetSession().Query(query, defaultTinkoffToken, defaultID, "tinkoff").WithContext(ctx).Exec()
 		if err != nil {
 			return err
 		}

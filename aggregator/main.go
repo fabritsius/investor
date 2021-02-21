@@ -35,10 +35,11 @@ func main() {
 	if db, err = models.Connect("127.0.0.1"); err != nil {
 		log.Fatalf("did not connect to the database: %s", err)
 	}
-	if err = db.Init(); err != nil {
+	defer db.Disconnect()
+
+	if err := db.Init(); err != nil {
 		log.Fatalf("database init error: %s", err)
 	}
-	defer db.Close()
 
 	log.Printf("start: update stats every %d minutes", cfg.TickPeriodMins)
 	updatePortfolioStats(db, tinkoffConn)
