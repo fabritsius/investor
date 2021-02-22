@@ -28,6 +28,9 @@ ethereum:
 aggregate:
 	cd aggregator && go run main.go
 
+client:
+	cd clients/core && go run main.go
+
 # use 4.0-beta3 cause :latest doesn't support platform (linux/arm64/v8)
 # version 4.0-beta4 doesn't work because of this: https://issues.apache.org/jira/browse/CASSANDRA-16424
 db:
