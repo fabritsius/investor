@@ -11,6 +11,11 @@ services:
   tinkoff:
     build: ./plugins/tinkoff
     network_mode: host
+  ethereum:
+    build: ./plugins/ethereum
+    network_mode: host
+    env_file:
+      .env
   db:
     image: cassandra:4.0-beta3
     network_mode: host

@@ -14,7 +14,8 @@ import (
 )
 
 type config struct {
-	Port           string `env:"TINKOFF_PORT"`
+	TinkoffPort    string `env:"TINKOFF_PORT"`
+	EthereumPort   string `env:"ETHEREUM_PORT"`
 	TickPeriodMins int    `env:"AGGR_TICK_PERIOD" default:"10"`
 }
 
@@ -25,11 +26,18 @@ func main() {
 	}
 
 	var tinkoffConn *grpc.ClientConn
-	tinkoffConn, err := grpc.Dial(fmt.Sprintf(":%s", cfg.Port), grpc.WithInsecure())
+	tinkoffConn, err := grpc.Dial(fmt.Sprintf(":%s", cfg.TinkoffPort), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect to grpc: %s", err)
 	}
 	defer tinkoffConn.Close()
+
+	var ethereumConn *grpc.ClientConn
+	ethereumConn, err = grpc.Dial(fmt.Sprintf(":%s", cfg.EthereumPort), grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect to grpc: %s", err)
+	}
+	defer ethereumConn.Close()
 
 	var db *models.DB
 	if db, err = models.Connect("127.0.0.1"); err != nil {
@@ -42,14 +50,14 @@ func main() {
 	}
 
 	log.Printf("start: update stats every %d minutes", cfg.TickPeriodMins)
-	updatePortfolioStats(db, tinkoffConn)
+	updatePortfolioStats(db, tinkoffConn, ethereumConn)
 	for range time.Tick(time.Duration(cfg.TickPeriodMins) * time.Minute) {
 		log.Println("tick: updating portfolio stats")
-		updatePortfolioStats(db, tinkoffConn)
+		updatePortfolioStats(db, tinkoffConn, ethereumConn)
 	}
 }
 
-func updatePortfolioStats(db *models.DB, tinkoffConn *grpc.ClientConn) {
+func updatePortfolioStats(db *models.DB, tinkoffConn *grpc.ClientConn, ethereumConn *grpc.ClientConn) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -66,8 +74,12 @@ func updatePortfolioStats(db *models.DB, tinkoffConn *grpc.ClientConn) {
 		var err error
 		switch account.AccountType {
 		case "tinkoff":
-			if portfolio, err = GetTinkoffPortfolio(tinkoffConn, account.Token); err != nil {
-				log.Printf("error when calling getTinkoffPortfolio: %s", err)
+			if portfolio, err = GetPortfolio(tinkoffConn, account.Token); err != nil {
+				log.Printf("error when calling getPortfolio for tinkoff: %s", err)
+			}
+		case "ethereum":
+			if portfolio, err = GetPortfolio(ethereumConn, account.Token); err != nil {
+				log.Printf("error when calling getPortfolio for ethereum: %s", err)
 			}
 		}
 
@@ -93,9 +105,9 @@ func updatePortfolioStats(db *models.DB, tinkoffConn *grpc.ClientConn) {
 	}
 }
 
-// GetTinkoffPortfolio takes grpc connection and Tinkoff API Token
-// and returns user's Tinkoff portfolio with stocks and calculated totals
-func GetTinkoffPortfolio(conn *grpc.ClientConn, tinkoffToken string) (*messages.PortfolioReply, error) {
+// GetPortfolio takes grpc connection and an API Token
+// and returns user's portfolio with stocks and calculated totals
+func GetPortfolio(conn *grpc.ClientConn, tinkoffToken string) (*messages.PortfolioReply, error) {
 	client := messages.NewPortfolioClient(conn)
 
 	response, err := client.GetPortfolio(context.Background(), &messages.PortfolioRequest{

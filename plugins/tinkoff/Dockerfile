@@ -6,7 +6,7 @@
  # current go.mod has a replace() statement which requires local messages module
  # the next couple lines fix the installation by re-replacing the module
  # to leave replace() as it is future versions of "go install" should have an option to skip replaces
- RUN go mod edit -replace github.com/fabritsius/investor/messages=github.com/fabritsius/investor/messages@v0.0.0-20210218183334-c9662315d9b0
+ RUN go mod edit -replace github.com/fabritsius/investor/messages=github.com/fabritsius/investor/messages@v0.0.0-20210224185547-f97a6a021c10
  RUN go mod download github.com/fabritsius/investor/messages
  
  RUN go install

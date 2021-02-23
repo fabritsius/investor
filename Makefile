@@ -1,4 +1,5 @@
 export TINKOFF_PORT=7702
+export ETHEREUM_PORT=7703
 
 include .env
 export $(shell sed 's/=.*//' .env)
@@ -6,10 +7,12 @@ export $(shell sed 's/=.*//' .env)
 
 build:
 	docker build -t tinkoff-plugin ./plugins/tinkoff
+	docker build -t ethereum-plugin ./plugins/ethereum
 	docker build -t aggregator ./aggregator
 
 start:
 	docker start main-tinkoff-plugin || docker run -d -p 7702:7702 --name main-tinkoff-plugin tinkoff-plugin
+	docker start main-ethereum-plugin || docker run -d -p 7703:7703 --env-file .env --name main-ethereum-plugin ethereum-plugin
 	docker start main-aggregator || docker run -d --network="host" --name main-aggregator aggregator
 
 stop:
@@ -18,6 +21,9 @@ stop:
 
 tinkoff:
 	cd plugins/tinkoff && go run main.go
+
+ethereum:
+	cd plugins/ethereum && go run main.go
 
 aggregate:
 	cd aggregator && go run main.go

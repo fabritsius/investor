@@ -11,9 +11,11 @@
  
  RUN go install
  
- # port for gRPC connection
+ # ports for gRPC connection
  ENV TINKOFF_PORT 7702
  EXPOSE 7702
+ ENV ETHEREUM_PORT 7703
+ EXPOSE 7703
  
  # cassandra ports
  EXPOSE 7000
