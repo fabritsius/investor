@@ -47,6 +47,8 @@ func main() {
 		End:   time.Now(),
 	})
 
+	dailyTotals := make(map[string]*DailyTotals)
+	dates := make([]string, daysBack)
 	for item := range userRecords {
 		if item.Error != nil {
 			log.Printf("account error: %s", item.Error)
@@ -54,8 +56,37 @@ func main() {
 		}
 
 		record := item.Record
-		fmt.Println(*record)
+
+		var dailyAvgRecord *DailyTotals
+		var ok bool
+		if dailyAvgRecord, ok = dailyTotals[record.Date]; !ok {
+			dailyAvgRecord = &DailyTotals{}
+			dates = append(dates, record.Date)
+		}
+
+		switch record.AccountType {
+		case "tinkoff":
+			dailyAvgRecord.tinkoff += record.Avg
+		case "ethereum":
+			dailyAvgRecord.ethereum += record.Avg
+		}
+
+		dailyAvgRecord.total += record.Avg
+		dailyTotals[record.Date] = dailyAvgRecord
+	}
+
+	for _, date := range dates {
+		if dailyRecord, ok := dailyTotals[date]; ok {
+			fmt.Printf("%s: $%.1f + $%.1f = $%.1f\n", date, dailyRecord.tinkoff, dailyRecord.ethereum, dailyRecord.total)
+		}
 	}
 
 	fmt.Println("\nClient done.")
+}
+
+// DailyTotals contains combined and separate portfolio totals
+type DailyTotals struct {
+	tinkoff  float64
+	ethereum float64
+	total    float64
 }
