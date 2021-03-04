@@ -41,7 +41,11 @@ func main() {
 	}
 
 	daysBack := 7
-	userAccounts := []string{"tinkoff", "ethereum"}
+	userAccounts, err := db.GetAccountsForUser(ctx, userID)
+	if err != nil {
+		log.Fatalf("failed to load accounts by userID: %s", err)
+	}
+
 	userRecords := db.GetUserDailyRecordsForPeriod(ctx, userID, userAccounts, &models.Period{
 		Start: time.Now().Add(-time.Duration(daysBack) * 24 * time.Hour),
 		End:   time.Now(),
