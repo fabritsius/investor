@@ -81,6 +81,8 @@ func main() {
 		dailyTotals[record.Date] = dailyAvgRecord
 	}
 
+	fmt.Printf(utils.YellowString("%10s | %18s | %17s | %18s\n"), "date", "tinkoff ($)", "ethereum ($)", "total ($)")
+
 	var prevRecord *DailyTotals
 	for _, date := range dates {
 		if dailyRecord, ok := dailyTotals[date]; ok {
@@ -98,7 +100,7 @@ func main() {
 				colorFunc = utils.RedString
 			}
 
-			fmt.Printf(colorFunc("%s | $%.1f (%s%%) | $%.1f (%s%%) | $%.1f (%s%%)\n"), date, dailyRecord.tinkoff, tinkoffPercDiff, dailyRecord.ethereum, ethereumPercDiff, dailyRecord.total, totalPercDiff)
+			fmt.Printf(colorFunc("%s | %8.1f (%s%%) | %7.1f (%s%%) | %8.1f (%s%%)\n"), date, dailyRecord.tinkoff, tinkoffPercDiff, dailyRecord.ethereum, ethereumPercDiff, dailyRecord.total, totalPercDiff)
 
 			prevRecord = dailyRecord
 		}
