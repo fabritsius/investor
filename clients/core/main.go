@@ -81,7 +81,7 @@ func main() {
 		dailyTotals[record.Date] = dailyAvgRecord
 	}
 
-	fmt.Printf(utils.YellowString("%10s | %18s | %17s | %18s\n"), "date", "tinkoff ($)", "ethereum ($)", "total ($)")
+	fmt.Printf(utils.YellowString("%10s | %17s | %16s | %17s\n"), "date", "tinkoff ($)", "ethereum ($)", "total ($)")
 
 	var prevRecord *DailyTotals
 	for _, date := range dates {
